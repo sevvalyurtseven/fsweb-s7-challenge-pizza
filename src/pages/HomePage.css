@@ -1,0 +1,8 @@
+.home-page {
+  background-image: url("/Assets/mile1-assets/home-banner.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+  height: 100vh;
+  width: 100vw;
+}
