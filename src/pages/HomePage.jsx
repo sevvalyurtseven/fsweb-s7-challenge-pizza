@@ -6,9 +6,9 @@ function HomePage() {
         <h1>TEKNOLOJİK YEMEKLER</h1>
       </header>
       <section>
-        <p>KOD ACIKTIRIR</p>
-        <p>PIZZA, DOYURUR</p>
-        <button>ACIKTIM</button>
+        <p className="subtitle">KOD ACIKTIRIR</p>
+        <p className="subtitle">PIZZA, DOYURUR</p>
+        <button className="home-button">ACIKTIM</button>
       </section>
     </div>
   );
