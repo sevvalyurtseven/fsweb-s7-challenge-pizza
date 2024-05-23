@@ -99,6 +99,16 @@ function OrderPizza() {
     }
     console.log(updatedPizzaForm);
     setFormData(updatedPizzaForm);
+
+    // 4. adım: Formun valid olup olmadıgını kontrol etmek
+    Yup.reach(orderSchema, name)
+      .validate(value)
+      .then((valid) => {
+        setErrors({ ...errors, [name]: "" });
+      })
+      .catch((error) => {
+        setErrors({ ...errors, [name]: error.errors[0] });
+      });
   };
 
   const handleIncrease = () => {
