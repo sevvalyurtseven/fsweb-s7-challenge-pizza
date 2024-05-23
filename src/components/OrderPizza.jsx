@@ -1,5 +1,8 @@
 import { useState } from "react";
 import { Form, FormGroup, Label, Input, Button, Col, Row } from "reactstrap";
+import "./OrderPizza.css";
+import { NavLink, useLocation } from "react-router-dom";
+
 const ekMalzemeler = [
   "Pepperoni",
   "Sosis",
@@ -9,7 +12,7 @@ const ekMalzemeler = [
   "Domates",
   "Mısır",
   "Sucuk",
-  "Jalapeno",
+  "Jalepeno",
   "Sarımsak",
   "Biber",
   "Ananas",
@@ -26,6 +29,8 @@ const initialValues = {
 
 function OrderPizza() {
   const [formData, setFormData] = useState(initialValues);
+
+  const location = useLocation();
 
   const handleSubmit = (event) => {
     event.preventDefault();
@@ -74,106 +79,131 @@ function OrderPizza() {
   };
 
   return (
-    <div className="order-pizza">
-      <header>
-        <h1>TEKNOLOJİK YEMEKLER</h1>
+    <div className="order-pizza-container">
+      <header className="order-header">
+        <h1 className="order-title">Teknolojik Yemekler</h1>
+
+        <nav className="order-nav">
+          <NavLink exact to="/" activeClassName="active">
+            Anasayfa
+          </NavLink>
+          <span>-</span>
+          {location.pathname === "/order-pizza" ? (
+            <span className="active">Sipariş Oluştur</span>
+          ) : (
+            <NavLink to="/order-pizza" activeClassName="active">
+              Sipariş Oluştur
+            </NavLink>
+          )}
+        </nav>
       </header>
-      <section>
-        <h3>Position Absolute Acı Pizza</h3>
-        <p>
-          <span>85.50₺</span>
-          <span>4.9</span>
-          <span>(200)</span>
-        </p>
-        <p>
-          Frontend Dev olarak hala position:absolute kullanıyorsan bu çok acı
-          pizza tam sana göre. Pizza, domates, peynir ve genellikle çeşitli
-          diğer malzemelerle kaplanmış, daha sonra geleneksel olarak odun
-          ateşinde bir fırında yüksek sıcaklıkta pişirilen, genellikle yuvarlak,
-          düzleştirilmiş mayalı buğday bazlı hamurdan oluşan İtalyan kökenli
-          lezzetli bir yemektir.. Küçük bir pizzaya bazen pizzetta denir.
-        </p>
+      <div className="order-form-container">
         <Form className="order-pizza-form" onSubmit={handleSubmit}>
-          <FormGroup tag="fieldset">
-            <legend>Boyut Seç</legend>
-            <FormGroup check>
-              <Label check>
-                <Input
-                  type="radio"
-                  name="boyut"
-                  value="Küçük"
-                  checked={formData.boyut === "Küçük"}
-                  onChange={handleChange}
-                />
-                Küçük
-              </Label>
+          <h3 className="pizza-title">Position Absolute Acı Pizza</h3>
+          <p className="pizza-info">
+            <span className="pizza-price">85.50₺</span>
+            <span className="pizza-rating">4.9</span>
+            <span className="pizza-reviews">(200)</span>
+          </p>
+          <p className="pizza-description">
+            Frontend Dev olarak hala position:absolute kullanıyorsan bu çok acı
+            pizza tam sana göre. Pizza, domates, peynir ve genellikle çeşitli
+            diğer malzemelerle kaplanmış, daha sonra geleneksel olarak odun
+            ateşinde bir fırında yüksek sıcaklıkta pişirilen, genellikle
+            yuvarlak, düzleştirilmiş mayalı buğday bazlı hamurdan oluşan İtalyan
+            kökenli lezzetli bir yemektir.. Küçük bir pizzaya bazen pizzetta
+            denir.
+          </p>
+          <div className="pizza-options">
+            <FormGroup tag="fieldset" className="pizza-size">
+              <legend>
+                Boyut Seç<span>*</span>
+              </legend>
+              <FormGroup check>
+                <Label check>
+                  <Input
+                    type="radio"
+                    name="boyut"
+                    value="Küçük"
+                    checked={formData.boyut === "Küçük"}
+                    onChange={handleChange}
+                  />
+                  Küçük
+                </Label>
+              </FormGroup>
+              <FormGroup check>
+                <Label check>
+                  <Input
+                    type="radio"
+                    name="boyut"
+                    value="Orta"
+                    checked={formData.boyut === "Orta"}
+                    onChange={handleChange}
+                  />
+                  Orta
+                </Label>
+              </FormGroup>
+              <FormGroup check>
+                <Label check>
+                  <Input
+                    type="radio"
+                    name="boyut"
+                    value="Büyük"
+                    checked={formData.boyut === "Büyük"}
+                    onChange={handleChange}
+                  />
+                  Büyük
+                </Label>
+              </FormGroup>
             </FormGroup>
-            <FormGroup check>
-              <Label check>
-                <Input
-                  type="radio"
-                  name="boyut"
-                  value="Orta"
-                  checked={formData.boyut === "Orta"}
-                  onChange={handleChange}
-                />
-                Orta
+            <FormGroup row className="pizza-dough">
+              <Label sm={6} for="hamur">
+                <legend>
+                  Hamur Seç<span>*</span>
+                </legend>
               </Label>
-            </FormGroup>
-            <FormGroup check>
-              <Label check>
+              <Col sm={7}>
                 <Input
-                  type="radio"
-                  name="boyut"
-                  value="Büyük"
-                  checked={formData.boyut === "Büyük"}
+                  id="hamur"
+                  name="hamur"
+                  type="select"
                   onChange={handleChange}
-                />
-                Büyük
-              </Label>
+                  value={formData.hamur}
+                >
+                  <option value="" disabled>
+                    Hamur Kalınlığı
+                  </option>
+                  <option value="İnce">İnce</option>
+                  <option value="Normal">Normal</option>
+                  <option value="Kalın">Kalın</option>
+                </Input>
+              </Col>
             </FormGroup>
-          </FormGroup>
-          <FormGroup row>
-            <Label for="hamur" sm={6}>
-              Hamur Seç
-            </Label>
-            <Col sm={10}>
-              <Input
-                id="hamur"
-                name="hamur"
-                type="select"
-                onChange={handleChange}
-                value={formData.hamur}
-              >
-                <option value="" disabled>
-                  Hamur Kalınlığı
-                </option>
-                <option value="İnce">İnce</option>
-                <option value="Normal">Normal</option>
-                <option value="Kalın">Kalın</option>
-              </Input>
-            </Col>
-          </FormGroup>
+          </div>
           <div className="ek-malzemeler">
             <FormGroup>
               <legend>Ek Malzemeler</legend>
               <p>En fazla 10 malzeme seçebilirsiniz. 5₺</p>
-              {ekMalzemeler.map((malzeme, index) => (
-                <FormGroup check key={index}>
-                  <Label check>
-                    <Input
-                      type="checkbox"
-                      name={malzeme}
-                      checked={formData.ekMalzemeler.includes(malzeme)}
-                      onChange={handleChange}
-                    />
-                    {malzeme}
-                  </Label>
-                </FormGroup>
-              ))}
+              <div className="ek-malzemeler-container">
+                {ekMalzemeler.map((malzeme, index) => (
+                  <div className="ek-malzeme" key={index}>
+                    <FormGroup check>
+                      <Label check className="ek-malzeme-label">
+                        <Input
+                          type="checkbox"
+                          name={malzeme}
+                          checked={formData.ekMalzemeler.includes(malzeme)}
+                          onChange={handleChange}
+                        />
+                        {malzeme}
+                      </Label>
+                    </FormGroup>
+                  </div>
+                ))}
+              </div>
             </FormGroup>
           </div>
-          <FormGroup>
+          <FormGroup className="order-note">
             <Label for="siparisNotu">Sipariş Notu</Label>
             <Input
               type="textarea"
@@ -183,27 +213,40 @@ function OrderPizza() {
               onChange={handleChange}
               placeholder="Siparişine eklemek istediğin bir not var mı?"
             />
-            <Row className="order-summary">
-              <Col md="6" className="quantity">
-                <Button color="secondary" outline onClick={handleDecrease}>
-                  -
-                </Button>
-                <Input type="number" value={formData.miktar} readOnly />
-                <Button color="secondary" outline onClick={handleIncrease}>
-                  +
-                </Button>
-              </Col>
-              <Col md="6" className="summary">
-                <p>Seçimler: {calculateExtraCost()}₺</p>
-                <p>Toplam: {calculateTotalPrice().toFixed(2)}₺</p>
-              </Col>
-            </Row>
-            <Button color="warning" block>
-              SİPARİŞ VER
-            </Button>
           </FormGroup>
+          <hr />
+          <Row className="order-summary">
+            <Col md="4" className="quantity-container">
+              <Button color="warning" onClick={handleDecrease}>
+                -
+              </Button>
+
+              <Input
+                type="number"
+                className="pb-3 pt-4 text-center"
+                value={formData.miktar}
+                readOnly
+              />
+
+              <Button color="warning" onClick={handleIncrease}>
+                +
+              </Button>
+            </Col>
+            <Col md="7" className="summary">
+              <h3>Sipariş Toplamı</h3>
+              <p className="order-price">
+                Seçimler<span>{calculateExtraCost()}₺</span>{" "}
+              </p>
+              <p className="total-price">
+                Toplam<span>{calculateTotalPrice().toFixed(2)}₺</span>
+              </p>
+              <Button color="warning" size="lg" className="p-3" block>
+                SİPARİŞ VER
+              </Button>
+            </Col>
+          </Row>
         </Form>
-      </section>
+      </div>
     </div>
   );
 }
