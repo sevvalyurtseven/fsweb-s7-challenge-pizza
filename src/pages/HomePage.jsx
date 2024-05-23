@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom/cjs/react-router-dom.min";
 import "./HomePage.css";
 function HomePage() {
   return (
@@ -8,7 +9,9 @@ function HomePage() {
       <section>
         <p className="subtitle">KOD ACIKTIRIR</p>
         <p className="subtitle">PIZZA, DOYURUR</p>
-        <button className="home-button">ACIKTIM</button>
+        <Link to="/order-pizza" className="home-button">
+          ACIKTIM
+        </Link>
       </section>
     </div>
   );
