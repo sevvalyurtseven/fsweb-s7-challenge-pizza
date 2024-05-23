@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Form, FormGroup, Label, Input, Button, Col } from "reactstrap";
+import { Form, FormGroup, Label, Input, Button, Col, Row } from "reactstrap";
 const ekMalzemeler = [
   "Pepperoni",
   "Sosis",
@@ -52,6 +52,15 @@ function OrderPizza() {
     }
     console.log(updatedPizzaForm);
     setFormData(updatedPizzaForm);
+  };
+
+  const handleIncrease = () => {
+    setFormData({ ...formData, miktar: formData.miktar + 1 });
+  };
+  const handleDecrease = () => {
+    if (formData.miktar > 1) {
+      setFormData({ ...formData, miktar: formData.miktar - 1 });
+    }
   };
 
   return (
@@ -164,6 +173,17 @@ function OrderPizza() {
               onChange={handleChange}
               placeholder="Siparişine eklemek istediğin bir not var mı?"
             />
+            <Row className="order-summary">
+              <Col md="6" className="quantity">
+                <Button color="secondary" outline onClick={handleDecrease}>
+                  -
+                </Button>
+                <Input type="number" value={formData.miktar} readOnly />
+                <Button color="secondary" outline onClick={handleIncrease}>
+                  +
+                </Button>
+              </Col>
+            </Row>
           </FormGroup>
         </Form>
       </section>
