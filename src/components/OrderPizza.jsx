@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Form, FormGroup, Label, Input, Button, Col, Row } from "reactstrap";
 import "./OrderPizza.css";
 import { NavLink, useLocation } from "react-router-dom";
@@ -66,6 +66,19 @@ function OrderPizza() {
     console.log(formData);
     setFormData(initialValues);
   };
+
+  // 4. adım: Formun valid olup olmadıgını kontrol etmek
+
+  useEffect(() => {
+    orderSchema
+      .isValid(formData)
+      .then((valid) => {
+        setIsValid(valid);
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  }, [formData]);
 
   const handleChange = (event) => {
     const { type, checked } = event.target;
