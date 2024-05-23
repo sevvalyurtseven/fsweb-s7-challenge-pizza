@@ -63,6 +63,16 @@ function OrderPizza() {
     }
   };
 
+  const calculateExtraCost = () => {
+    return formData.ekMalzemeler.length * 5;
+  };
+
+  const calculateTotalPrice = () => {
+    const pizzaPrice = 85.5;
+    const extraCost = calculateExtraCost();
+    return (pizzaPrice + extraCost) * formData.miktar;
+  };
+
   return (
     <div className="order-pizza">
       <header>
@@ -183,7 +193,14 @@ function OrderPizza() {
                   +
                 </Button>
               </Col>
+              <Col md="6" className="summary">
+                <p>Seçimler: {calculateExtraCost()}₺</p>
+                <p>Toplam: {calculateTotalPrice().toFixed(2)}₺</p>
+              </Col>
             </Row>
+            <Button color="warning" block>
+              SİPARİŞ VER
+            </Button>
           </FormGroup>
         </Form>
       </section>
