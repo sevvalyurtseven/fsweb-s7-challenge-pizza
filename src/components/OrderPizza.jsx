@@ -27,8 +27,19 @@ const initialValues = {
   miktar: 1,
 };
 
+const initialErrors = {
+  boyut: "",
+  hamur: "",
+  ekMalzemeler: "",
+  not: "",
+  miktar: "",
+};
+
 function OrderPizza() {
   const [formData, setFormData] = useState(initialValues);
+
+  // 1. adım: Formdaki errorleri tutmak için bir state olustur
+  const [errors, setErrors] = useState(initialErrors);
 
   const location = useLocation();
 
