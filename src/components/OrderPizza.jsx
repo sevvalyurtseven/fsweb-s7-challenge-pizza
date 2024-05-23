@@ -41,6 +41,9 @@ function OrderPizza() {
   // 1. adım: Formdaki errorleri tutmak için bir state olustur
   const [errors, setErrors] = useState(initialErrors);
 
+  // 2. adım: Formun valid olup olmadıgını kontrol etmek icin bir state olustur
+  const [isValid, setIsValid] = useState(false);
+
   const location = useLocation();
 
   const handleSubmit = (event) => {
