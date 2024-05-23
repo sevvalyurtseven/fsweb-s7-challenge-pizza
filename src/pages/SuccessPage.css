@@ -1,0 +1,22 @@
+.success-page {
+  width: 100vw;
+  height: 100vh;
+  background-color: #ce2829;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.success-page header h1 {
+  font-size: 2rem;
+  margin-bottom: 100%;
+}
+
+.success-page section p {
+  font-family: "Roboto Condensed", sans-serif;
+  font-weight: 200;
+  font-size: 7vh;
+  line-height: 1;
+  text-align: center;
+}

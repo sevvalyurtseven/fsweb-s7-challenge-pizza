@@ -1,7 +1,16 @@
+import "./SuccessPage.css";
 function SuccessPage() {
   return (
-    <div>
-      <h1>Success Page</h1>
+    <div className="success-page">
+      <header>
+        <h1>TEKNOLOJİK YEMEKLER</h1>
+      </header>
+      <section>
+        <p>
+          TEBRİKLER! <br />
+          SİPARİŞİNİZ ALINDI!
+        </p>
+      </section>
     </div>
   );
 }
