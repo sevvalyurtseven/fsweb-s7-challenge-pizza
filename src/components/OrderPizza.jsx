@@ -2,7 +2,7 @@ import { useState } from "react";
 import { Form, FormGroup, Label, Input, Button, Col, Row } from "reactstrap";
 import "./OrderPizza.css";
 import { NavLink, useLocation } from "react-router-dom";
-
+import * as Yup from "yup";
 const ekMalzemeler = [
   "Pepperoni",
   "Sosis",
@@ -43,6 +43,21 @@ function OrderPizza() {
 
   // 2. adım: Formun valid olup olmadıgını kontrol etmek icin bir state olustur
   const [isValid, setIsValid] = useState(false);
+
+  // 3. adım: Form şemasını olustur
+
+  const orderSchema = Yup.object().shape({
+    boyut: Yup.string().required("Lütfen pizzanız için bir boyut seçiniz."),
+
+    hamur: Yup.string().required(
+      "Lütfen pizzanız için bir hamur türü seçiniz."
+    ),
+    ekMalzemeler: Yup.array().max(5, "En fazla 5 malzemeyi seçebilirsiniz."),
+
+    not: Yup.string()
+      .min(5, "Girdiğiniz not en az 5 karakter olmalıdır.")
+      .max(50, "Girdiğiniz not en fazla 50 karakter olmalıdır."),
+  });
 
   const location = useLocation();
 
