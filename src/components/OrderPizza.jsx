@@ -1,23 +1,39 @@
 import { useEffect, useState } from "react";
-import { Form, FormGroup, Label, Input, Button, Col, Row } from "reactstrap";
+import {
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Button,
+  Col,
+  Row,
+  FormFeedback,
+} from "reactstrap";
 import "./OrderPizza.css";
 import { NavLink, useLocation } from "react-router-dom";
 import * as Yup from "yup";
-const ekMalzemeler = [
-  "Pepperoni",
-  "Sosis",
-  "Kanada Jambonu",
-  "Tavuk Izgara",
-  "Soğan",
-  "Domates",
-  "Mısır",
-  "Sucuk",
-  "Jalepeno",
-  "Sarımsak",
-  "Biber",
-  "Ananas",
-  "Kabak",
-];
+import { useHistory } from "react-router-dom/cjs/react-router-dom.min";
+import axios from "axios";
+
+const pizzaOptions = {
+  boyut: ["Kucuk", "Orta", "Buyuk"],
+  hamur: ["İnce", "Normal", "Kalın"],
+  ekMalzemeler: [
+    "Pepperoni",
+    "Sosis",
+    "Kanada Jambonu",
+    "Tavuk Izgara",
+    "Soğan",
+    "Domates",
+    "Mısır",
+    "Sucuk",
+    "Jalepeno",
+    "Sarımsak",
+    "Biber",
+    "Ananas",
+    "Kabak",
+  ],
+};
 
 const initialValues = {
   boyut: "",
@@ -32,7 +48,6 @@ const initialErrors = {
   hamur: "",
   ekMalzemeler: "",
   not: "",
-  miktar: "",
 };
 
 function OrderPizza() {
@@ -44,31 +59,44 @@ function OrderPizza() {
   // 2. adım: Formun valid olup olmadıgını kontrol etmek icin bir state olustur
   const [isValid, setIsValid] = useState(false);
 
+  const history = useHistory();
+
   // 3. adım: Form şemasını olustur
-
   const orderSchema = Yup.object().shape({
-    boyut: Yup.string().required("Lütfen pizzanız için bir boyut seçiniz."),
-
-    hamur: Yup.string().required(
-      "Lütfen pizzanız için bir hamur türü seçiniz."
-    ),
-    ekMalzemeler: Yup.array().max(5, "En fazla 5 malzemeyi seçebilirsiniz."),
-
+    boyut: Yup.string()
+      .oneOf(pizzaOptions.boyut, "Lütfen pizzanız için bir boyut seçin")
+      .required("Boyut alanı zorunludur"),
+    hamur: Yup.string()
+      .oneOf(pizzaOptions.hamur, "Lütfen pizzanız için bir hamur tipi seçin")
+      .required("Hamur alanı zorunludur"),
     not: Yup.string()
-      .min(5, "Girdiğiniz not en az 5 karakter olmalıdır.")
-      .max(50, "Girdiğiniz not en fazla 50 karakter olmalıdır."),
+      .nullable()
+      .min(10, "Sipariş notu 10 karakterden az olamaz")
+      .max(100, "Sipariş notu 100 karakterden fazla olamaz"),
+    ekMalzemeler: Yup.array().max(10, "En fazla 10 malzeme seçebilirsiniz"),
   });
 
   const location = useLocation();
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    console.log(formData);
-    setFormData(initialValues);
+    if (isValid) {
+      axios
+        .post("https://reqres.in/api/users", formData)
+        .then((response) => {
+          console.log(response);
+          history.push("/success");
+          setFormData(initialValues);
+        })
+        .catch((error) => {
+          console.log(error.response.message);
+        });
+    } else {
+      alert("Lütfen gerekli alanları doldurunuz");
+    }
   };
 
   // 4. adım: Formun valid olup olmadıgını kontrol etmek
-
   useEffect(() => {
     orderSchema
       .isValid(formData)
@@ -81,29 +109,26 @@ function OrderPizza() {
   }, [formData]);
 
   const handleChange = (event) => {
-    const { type, checked } = event.target;
-    let { name, value } = event.target;
-    const updatedPizzaForm = { ...formData };
+    const { type, checked, name, value } = event.target;
+    let updatedFormData = { ...formData };
 
     if (type === "checkbox") {
-      if (checked) {
-        updatedPizzaForm.ekMalzemeler.push(name);
-      } else {
-        const index = updatedPizzaForm.ekMalzemeler.indexOf(name);
-        updatedPizzaForm.ekMalzemeler.splice(index, 1);
-      }
-      name = "ekMalzemeler";
-      value = updatedPizzaForm.ekMalzemeler;
+      const updatedEkMalzemeler = checked
+        ? [...updatedFormData.ekMalzemeler, value]
+        : updatedFormData.ekMalzemeler.filter((item) => item !== value);
+      updatedFormData = {
+        ...updatedFormData,
+        ekMalzemeler: updatedEkMalzemeler,
+      };
     } else {
-      updatedPizzaForm[name] = value;
+      updatedFormData = { ...updatedFormData, [name]: value };
     }
-    console.log(updatedPizzaForm);
-    setFormData(updatedPizzaForm);
 
-    // 4. adım: Formun valid olup olmadıgını kontrol etmek
+    setFormData(updatedFormData);
+
     Yup.reach(orderSchema, name)
-      .validate(value)
-      .then((valid) => {
+      .validate(type === "checkbox" ? updatedFormData.ekMalzemeler : value)
+      .then(() => {
         setErrors({ ...errors, [name]: "" });
       })
       .catch((error) => {
@@ -114,6 +139,7 @@ function OrderPizza() {
   const handleIncrease = () => {
     setFormData({ ...formData, miktar: formData.miktar + 1 });
   };
+
   const handleDecrease = () => {
     if (formData.miktar > 1) {
       setFormData({ ...formData, miktar: formData.miktar - 1 });
@@ -171,42 +197,22 @@ function OrderPizza() {
               <legend>
                 Boyut Seç<span>*</span>
               </legend>
-              <FormGroup check>
-                <Label check>
-                  <Input
-                    type="radio"
-                    name="boyut"
-                    value="Küçük"
-                    checked={formData.boyut === "Küçük"}
-                    onChange={handleChange}
-                  />
-                  Küçük
-                </Label>
-              </FormGroup>
-              <FormGroup check>
-                <Label check>
-                  <Input
-                    type="radio"
-                    name="boyut"
-                    value="Orta"
-                    checked={formData.boyut === "Orta"}
-                    onChange={handleChange}
-                  />
-                  Orta
-                </Label>
-              </FormGroup>
-              <FormGroup check>
-                <Label check>
-                  <Input
-                    type="radio"
-                    name="boyut"
-                    value="Büyük"
-                    checked={formData.boyut === "Büyük"}
-                    onChange={handleChange}
-                  />
-                  Büyük
-                </Label>
-              </FormGroup>
+              {pizzaOptions.boyut.map((size) => (
+                <FormGroup check key={size}>
+                  <Label check>
+                    <Input
+                      type="radio"
+                      name="boyut"
+                      value={size}
+                      checked={formData.boyut === size}
+                      onChange={handleChange}
+                      invalid={!!errors.boyut}
+                    />
+                    {size}
+                  </Label>
+                </FormGroup>
+              ))}
+              <FormFeedback>{errors.boyut}</FormFeedback>
             </FormGroup>
             <FormGroup row className="pizza-dough">
               <Label sm={6} for="hamur">
@@ -221,31 +227,43 @@ function OrderPizza() {
                   type="select"
                   onChange={handleChange}
                   value={formData.hamur}
+                  invalid={!!errors.hamur}
                 >
                   <option value="" disabled>
                     Hamur Kalınlığı
                   </option>
-                  <option value="İnce">İnce</option>
-                  <option value="Normal">Normal</option>
-                  <option value="Kalın">Kalın</option>
+                  {pizzaOptions.hamur.map((dough) => (
+                    <option value={dough} key={dough}>
+                      {dough}
+                    </option>
+                  ))}
                 </Input>
+                <FormFeedback>{errors.hamur}</FormFeedback>
               </Col>
             </FormGroup>
           </div>
           <div className="ek-malzemeler">
             <FormGroup>
               <legend>Ek Malzemeler</legend>
-              <p>En fazla 10 malzeme seçebilirsiniz. 5₺</p>
+              <p
+                className={
+                  formData.ekMalzemeler.length > 10 ? "text-danger" : ""
+                }
+              >
+                En fazla 10 malzeme seçebilirsiniz. 5₺
+              </p>
               <div className="ek-malzemeler-container">
-                {ekMalzemeler.map((malzeme, index) => (
+                {pizzaOptions.ekMalzemeler.map((malzeme, index) => (
                   <div className="ek-malzeme" key={index}>
                     <FormGroup check>
                       <Label check className="ek-malzeme-label">
                         <Input
                           type="checkbox"
-                          name={malzeme}
+                          name="ekMalzemeler"
+                          value={malzeme}
                           checked={formData.ekMalzemeler.includes(malzeme)}
                           onChange={handleChange}
+                          invalid={!!errors.ekMalzemeler}
                         />
                         {malzeme}
                       </Label>
@@ -253,6 +271,7 @@ function OrderPizza() {
                   </div>
                 ))}
               </div>
+              <FormFeedback>{errors.ekMalzemeler}</FormFeedback>
             </FormGroup>
           </div>
           <FormGroup className="order-note">
@@ -264,7 +283,9 @@ function OrderPizza() {
               value={formData.not}
               onChange={handleChange}
               placeholder="Siparişine eklemek istediğin bir not var mı?"
+              invalid={!!errors.not}
             />
+            <FormFeedback>{errors.not}</FormFeedback>
           </FormGroup>
           <hr />
           <Row className="order-summary">
